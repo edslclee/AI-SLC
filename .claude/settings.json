@@ -1,0 +1,47 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "prompt",
+        "prompt": "세션이 시작되었습니다. 다음 working-memory 파일들을 읽고 맥락을 복원하세요:\n1. working-memory/plan.md (현재 프로젝트 계획)\n2. working-memory/context-notes.md (기술적 맥락)\n3. working-memory/checklist.md (할 일 체크리스트)\n4. working-memory/change-log.md (최근 수정 기록)\n\n'Plan is King' 원칙: plan.md가 모든 구현의 기준입니다. 계획에 없는 변경은 금지입니다."
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre-edit-check.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre-bash-validate.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/post-edit-track.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "type": "prompt",
+        "prompt": "작업이 완료되기 전에 다음 품질 게이트를 확인하세요:\n\n## 품질 게이트 체크리스트\n1. 코드 변경이 있었다면, 관련 매뉴얼 챕터(manuals/)를 참조했는가?\n2. 모든 파일 변경이 working-memory/change-log.md에 기록되었는가?\n3. 완료 후 품질 체크리스트를 수행했는가?\n   - [ ] 에러 처리 누락 없음\n   - [ ] 보안 위험 패턴 없음\n   - [ ] 엣지 케이스 커버됨\n   - [ ] 테스트 필요성 확인됨\n   - [ ] 기존 기능 보존됨\n4. 구조화 보고서(Findings/Modifications/Rationale)가 존재하는가?\n\n코드 변경 없는 단순 대화/질문은 이 게이트를 통과합니다."
+      }
+    ]
+  }
+}
